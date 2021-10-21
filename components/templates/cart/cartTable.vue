@@ -91,6 +91,7 @@
                       </p>
                     </div>
                     <div
+                      data-testid="toppingSize"
                       v-for="topping in cartitem.toppings"
                       :key="topping.id"
                       class="sm:text-sm text-xs"
@@ -125,6 +126,7 @@
                     title="商品を削除"
                     @click="deleteCartItem(cartitem.specialId)"
                     class="sm:w-1/2 w-3/4"
+                    data-testid="show_cartItems"
                   >
                     <img src="~/assets/img/trash.webp" />
                   </button>
@@ -163,8 +165,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-//import { itemInfoStore } from '../../store';
-import { CartStore } from '../../store';
+import { CartStore } from '../../../store';
 export default Vue.extend({
   props: {
     cartItemFromStore: {
@@ -177,10 +178,10 @@ export default Vue.extend({
     },
   },
   async fetch() {
-    if (!this.moniterCarts.orderId) {
-      const fetchitemInfo = CartStore.fetchitemInfoAct();
-      await Promise.all([fetchitemInfo]);
-    }
+    //if (!this.moniterCarts.orderId) {
+    const fetchitemInfo = CartStore.fetchitemInfoAct();
+    await Promise.all([fetchitemInfo]);
+    //}
   },
   methods: {
     toppingSize(el: number): string | undefined {

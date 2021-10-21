@@ -1,15 +1,25 @@
 <template>
-  <div class="flex justify-center">
-    <div class="sm:bg-starbucks bg-center bg-no-repeat sm:w-full flex items-center">
+  <div
+    class="
+      flex
+      justify-center
+      bg-base_gray
+      bg-opacity-50
+      sm:bg-starbucks
+      bg-center bg-cover bg-no-repeat
+    "
+  >
+    <div class="sm:min-w-full flex h-full">
       <div
         type="text"
         class="
-          bg-white
+          bg-white bg-opacity-70
           container
           mx-auto
           p-10
           m-10
-          max-w-xs
+          min-w-xs
+          sm:w-1/2
           rounded-lg
           overflow-hidden
           shadow
@@ -17,217 +27,265 @@
         "
       >
         <div>
-          <h1 class="font-bold text-xl text-gray-700 text-center">会員登録</h1>
+          <h1 class="font-bold text-xl text-base_gray text-center">会員登録</h1>
         </div>
         <ValidationObserver v-slot="{ invalid }">
-          <div>
-            <label for="name">名前</label>
-            <validation-provider
-              v-slot="{ errors }"
-              name="名前"
-              rules="required|max:10"
-            >
-              <input
-                v-model="userInfo.name"
+          <div class="lg:grid lg:grid-cols-2 lg:gap-5">
+            <div>
+              <label
+                class="
+                  block
+                  uppercase
+                  tracking-wide
+                  text-base_green
+                  text-xs
+                  font-bold
+                  my-2
+                  ml-4
+                "
+              >
+                名前
+              </label>
+              <validation-provider
+                v-slot="{ errors }"
                 name="名前"
+                rules="required|max:10"
+              >
+                <inputA
+                  data-testid="inputName"
+                  name="名前"
+                  type="text"
+                  placeholder="例)田中 太朗"
+                  @input="inputName"
+                  class="rounded-full"
+                />
+                <span class="text-xs text-red-700">
+                  {{ errors[0] }}
+                </span>
+              </validation-provider>
+            </div>
+            <div>
+              <label
                 class="
-                  appearance-none
                   block
-                  w-full
-                  bg-gray-200
-                  text-gray-700
-                  border border-gray-200
-                  rounded
-                  py-3
-                  px-4
-                  leading-tight
-                  focus:outline-none focus:bg-white focus:border-gray-500
+                  uppercase
+                  tracking-wide
+                  text-base_green
+                  text-xs
+                  font-bold
+                  my-2
+                  ml-4
                 "
-                type="text"
-                placeholder="例)田中 太朗"
-              />
-              <span class="text-xs text-red-700">
-                {{ errors[0] }}
-              </span>
-            </validation-provider>
-          </div>
-          <div>
-            <label for="email">メール</label>
-            <validation-provider
-              v-slot="{ errors }"
-              name="メールアドレス"
-              rules="required|email"
-            >
-              <input
-                v-model="userInfo.email"
+              >
+                メールアドレス
+              </label>
+              <validation-provider
+                v-slot="{ errors }"
                 name="メールアドレス"
+                rules="required|email"
+              >
+                <inputA
+                  data-testid="inputMail"
+                  name="メールアドレス"
+                  type="text"
+                  placeholder="例)sample@gmail.com"
+                  @input="inputMail"
+                  class="rounded-full"
+                />
+                <span class="text-xs text-red-700">
+                  {{ errors[0] }}
+                </span>
+              </validation-provider>
+            </div>
+            <div class="flex flex-wrap items-start">
+              <div class="w-2/3 pr-2">
+                <label
+                  class="
+                    block
+                    uppercase
+                    tracking-wide
+                    text-base_green
+                    text-xs
+                    font-bold
+                    my-2
+                    ml-4
+                  "
+                >
+                  郵便番号
+                </label>
+                <validation-provider
+                  v-slot="{ errors }"
+                  name="郵便番号"
+                  rules="required|yubin"
+                >
+                  <inputA
+                    data-testid="inputPostalcode"
+                    v-model="userInfo.postalcode"
+                    name="郵便番号"
+                    type="number"
+                    placeholder=""
+                    @input="inputPostalcode"
+                    class="rounded-full"
+                  />
+                  <span class="text-xs text-red-700">
+                    {{ errors[0] }}
+                  </span>
+                </validation-provider>
+              </div>
+              <div class="w-1/3 mt-8">
+                <round-bottun
+                  data-testid="yubinbango"
+                  @click="yubinbango()"
+                  class="bg-base_gray pt-3"
+                >
+                  検索
+                </round-bottun>
+              </div>
+            </div>
+            <div>
+              <label
                 class="
-                  appearance-none
                   block
-                  w-full
-                  bg-gray-200
-                  text-gray-700
-                  border border-gray-200
-                  rounded
-                  py-3
-                  px-4
-                  leading-tight
-                  focus:outline-none focus:bg-white focus:border-gray-500
+                  uppercase
+                  tracking-wide
+                  text-base_green
+                  text-xs
+                  font-bold
+                  my-2
+                  ml-4
                 "
-                type="text"
-                placeholder="例)sample@gmail.com"
-              />
-              <span class="text-xs text-red-700">
-                {{ errors[0] }}
-              </span>
-            </validation-provider>
-          </div>
-          <div>
-            <label for="tel">電話番号</label>
-            <validation-provider
-              v-slot="{ errors }"
-              name="電話番号"
-              rules="required|min:10|max:11"
-            >
-              <input
-                v-model="userInfo.tel"
-                name="電話番号"
-                class="
-                  appearance-none
-                  block
-                  w-full
-                  bg-gray-200
-                  text-gray-700
-                  border border-gray-200
-                  rounded
-                  py-3
-                  px-4
-                  leading-tight
-                  focus:outline-none focus:bg-white focus:border-gray-500
-                "
-                type="text"
-                placeholder="例)090XXXXXXXX"
-              />
-              <span class="text-xs text-red-700">
-                {{ errors[0] }}
-              </span>
-            </validation-provider>
-          </div>
-          <div>
-            <label for="postalcode">郵便番号</label>
-            <validation-provider
-              v-slot="{ errors }"
-              name="郵便番号"
-              rules="required|yubin"
-            >
-              <input
-                v-model="userInfo.postalcode"
-                name="郵便番号"
-                class="
-                  appearance-none
-                  block
-                  w-full
-                  bg-gray-200
-                  text-gray-700
-                  border border-gray-200
-                  rounded
-                  py-3
-                  px-4
-                  leading-tight
-                  focus:outline-none focus:bg-white focus:border-gray-500
-                "
-                type="text"
-                placeholder=""
-              />
-              <span class="text-xs text-red-700">
-                {{ errors[0] }}
-              </span>
-            </validation-provider>
-          </div>
-
-          <div>
-            <label for="address">住所</label>
-            <validation-provider
-              v-slot="{ errors }"
-              name="住所"
-              rules="required"
-            >
-              <input
-                v-model="userInfo.address"
+              >
+                住所
+              </label>
+              <validation-provider
+                v-slot="{ errors }"
                 name="住所"
+                rules="required"
+              >
+                <inputA
+                  data-testid="inputAddress"
+                  v-model="userInfo.address"
+                  name="住所"
+                  type="text"
+                  placeholder="東京都新宿区"
+                  @input="inputAddress"
+                  class="rounded-full"
+                />
+                <span class="text-xs text-red-700">
+                  {{ errors[0] }}
+                </span>
+              </validation-provider>
+            </div>
+            <div>
+              <label
                 class="
-                  appearance-none
                   block
-                  w-full
-                  bg-gray-200
-                  text-gray-700
-                  border border-gray-200
-                  rounded
-                  py-3
-                  px-4
-                  leading-tight
-                  focus:outline-none focus:bg-white focus:border-gray-500
+                  uppercase
+                  tracking-wide
+                  text-base_green
+                  text-xs
+                  font-bold
+                  my-2
+                  ml-4
                 "
-                type="text"
-                placeholder="東京都新宿区"
-              />
-              <span class="text-xs text-red-700">
-                {{ errors[0] }}
-              </span>
-            </validation-provider>
-          </div>
-          <div>
-            <label for="password">パスワード(登録)</label>
-            <validation-provider
-              v-slot="{ errors }"
-              name="パスワード"
-              rules="required"
-            >
-              <input
-                v-model="userInfo.password"
+              >
+                電話番号
+              </label>
+              <validation-provider
+                v-slot="{ errors }"
+                name="電話番号"
+                rules="required|min:10|max:11"
+              >
+                <inputA
+                  data-testid="inputTel"
+                  name="電話番号"
+                  type="text"
+                  placeholder="例)090XXXXXXXX"
+                  @input="inputTel"
+                  class="rounded-full"
+                />
+                <span class="text-xs text-red-700">
+                  {{ errors[0] }}
+                </span>
+              </validation-provider>
+            </div>
+            <div>
+              <label
                 class="
-                  appearance-none
                   block
-                  w-full
-                  bg-gray-200
-                  text-gray-700
-                  border border-gray-200
-                  rounded
-                  py-3
-                  px-4
-                  leading-tight
-                  focus:outline-none focus:bg-white focus:border-gray-500
+                  uppercase
+                  tracking-wide
+                  text-base_green
+                  text-xs
+                  font-bold
+                  my-2
+                  ml-4
                 "
-                type="password"
-                placeholder="例)*******"
-              />
-              <span class="text-xs text-red-700">
-                {{ errors[0] }}
-              </span>
-            </validation-provider>
-          </div>
-          <div class="my-4 ml-16 self-center">
-            <button
-              @click="signup"
-              :disabled="invalid"
-              class="
-                bg-base_red
-                hover:bg-base_orange
-                text-white
-                font-bold
-                py-2
-                px-6
-                rounded-full
-              "
-            >
-              登録
-            </button>
+              >
+                パスワード
+              </label>
+              <validation-provider
+                v-slot="{ errors }"
+                name="パスワード"
+                rules="required"
+              >
+                <div class="flex">
+                  <inputA
+                    data-testid="inputPassword"
+                    name="パスワード"
+                    :type="inputType"
+                    placeholder="例)*******"
+                    @input="inputPassword"
+                    class="rounded-full"
+                  />
+                  <div @click="onClick" class="w-16" data-testid="onClick">
+                    <div v-show="isChecked">
+                      <img src="~/assets/img/eye_icon.webp" />
+                    </div>
+                    <div v-show="!isChecked">
+                      <img src="~/assets/img/noeye_icon.webp" />
+                    </div>
+                  </div>
+                </div>
+                <span class="text-xs text-red-700">
+                  {{ errors[0] }}
+                </span>
+              </validation-provider>
+            </div>
+            <div class="flex justify-center col-span-2 items-center">
+              <div v-if="invalid" class="">
+                <div
+                  class="
+                    m-5
+                    p-2
+                    text-center
+                    font-semibold
+                    text-base_red
+                    bg-base_red
+                    bg-opacity-50
+                    rounded-full
+                  "
+                >
+                  ※入力内容が不足しています
+                </div>
+              </div>
+              <div class="">
+                <round-bottun
+                  data-testid="signup"
+                  @click="signup"
+                  :disabled="invalid"
+                  v-if="!invalid"
+                >
+                  登録
+                </round-bottun>
+              </div>
+            </div>
           </div>
         </ValidationObserver>
         <div class="self-center">
-          <nuxt-link to="/signin" class="text-blue-700">
+          <router-link to="/signin" class="text-blue-700">
             会員登録済みの方はこちら
-          </nuxt-link>
+          </router-link>
         </div>
       </div>
     </div>
@@ -238,27 +296,45 @@ import Vue from 'vue';
 import { ValidationProvider, ValidationObserver } from 'vee-validate';
 import firebase, { auth, db } from '../plugins/firebase';
 import { userInfoType } from '../types/userInfoType';
+import roundButton from '../components/atoms/button/roundBottun.vue';
+import inputA from '../components/atoms/input/inputA.vue';
+
+let YubinBango = require('yubinbango-core2');
 
 type DataType = {
   userInfo: userInfoType;
+  isChecked: boolean;
+  eye: boolean;
+};
+type headType = {
+  title: string;
 };
 export default Vue.extend({
+  components: {
+    ValidationProvider,
+    ValidationObserver,
+    roundButton,
+    inputA,
+  },
   data(): DataType {
     return {
       userInfo: {
+        name: '',
         email: '',
         password: '',
-        name: '',
         tel: '',
         postalcode: '',
         address: '',
         uid: '',
       },
+      isChecked: false,
+      eye: false,
     };
   },
-  components: {
-    ValidationProvider,
-    ValidationObserver,
+  head(): headType {
+    return {
+      title: '会員登録',
+    };
   },
   methods: {
     async signup(): Promise<void> {
@@ -280,11 +356,6 @@ export default Vue.extend({
         console.log(error.message);
       }
     },
-
-
-
-
-
     addAuthUserToDb(
       uid: string
     ): Promise<
@@ -298,6 +369,40 @@ export default Vue.extend({
         address: this.userInfo.address,
         uid: uid,
       });
+    },
+    inputName(value: string): void {
+      this.userInfo.name = value;
+    },
+    inputMail(value: string): void {
+      this.userInfo.email = value;
+    },
+    inputPassword(value: string): void {
+      this.userInfo.password = value;
+    },
+    inputTel(value: string): void {
+      this.userInfo.tel = value;
+    },
+    inputPostalcode(value: string): void {
+      this.userInfo.postalcode = value;
+    },
+    inputAddress(value: string): void {
+      this.userInfo.address = value;
+    },
+    yubinbango() {
+      console.log(this.userInfo.postalcode);
+      let newAddress = '';
+      new YubinBango.Core(this.userInfo.postalcode, (addr: any) => {
+        newAddress = addr.region + addr.locality + addr.street;
+        this.userInfo.address = newAddress;
+      });
+    },
+    onClick() {
+      this.isChecked = !this.isChecked;
+    },
+  },
+  computed: {
+    inputType(): string {
+      return this.isChecked ? 'text' : 'password';
     },
   },
 });

@@ -1,12 +1,12 @@
 import { toppingType } from "./toppingType";
 import { userInfoType } from "./userInfoType" 
 export interface cartItemType {
-    itemId?:number;
+    itemId?:number|string;
     itemName?:string;
     itemPrice?:number;
     itemImg?:string;
     itemNum?:number;
-    toppings?: toppingType[];
+    toppings?: toppingType[]|null;
     orderId?:string;
     status?:0,
     allToppingPrice?:number;

@@ -1,54 +1,70 @@
 import { Module, VuexModule, Mutation, Action } from "vuex-module-decorators"
-import { db } from "~/plugins/firebase";
-import { cartItemType,orderedItemType, orderItemType } from "~/types/cartItemType";
-import { UserStore } from "~/store";
+import { db } from "../plugins/firebase";
+import { cartItemType,orderedItemType, orderItemType } from "../types/cartItemType";
+import { UserStore } from "../store";
 @Module({ name: 'cart', namespaced: true ,stateFactory: true})
 
  export default class CartStore extends VuexModule {
      
     // state----------------------------------------
-    //public carts: orderedItemType[]=[];
     public cartWithUser = [];
-
         //******fromIteminfoStore
     public itemInfo:  orderItemType[] = [];
     public userUid: string='';
     public order:null|cartItemType=null;
+    public orderLog: orderItemType[]=[]
 
 
     // getters--------------------------------------
-    // public get getCart(): orderedItemType[]{
-    //     return this.carts
-    // }
-
         //******fromIteminfoStore
     public get getitemInfo():  orderItemType[]{
         return this.itemInfo;
     }
 
+    public get getOrderLog(): orderItemType[]{
+        return this.orderLog
+    }
+
     // mutation-------------------------------------
+    // @Mutation
+    // private addItemToCartMut(addItemToCart:orderedItemType, idFromDb:string|null):void{
+    //     if(idFromDb===null)return
+    // this.itemInfo.push({...addItemToCart,orderId:idFromDb});
+    // console.log("addItemToCartMut"+ JSON.stringify(this.itemInfo))
+    // }
+
+
     @Mutation
-    private addItemToCartMut(addItemToCart:orderedItemType, idFromDb:string|null):void{
-        if(idFromDb===null)return
-    this.itemInfo.push({...addItemToCart,orderId:idFromDb});
+    private addItemToCartMut(addItemToCart:any):void{
+    this.itemInfo.push(addItemToCart);
     }
 
         //******fromIteminfoStore
     @Mutation
     private fetchitemInfoMut(itemInfoFromDb:cartItemType):void{
-        console.log('fetchitemInfoMut')
         this.itemInfo.push(itemInfoFromDb)
     }
 
-    @Mutation
-    public addItemToNewCart(addItemToCart:orderedItemType,idFromDb:string|null):void{
-        this.itemInfo.push({...addItemToCart,orderId:idFromDb})
-    }
+    // @Mutation
+    // public addItemToNewCart(addItemToCart:orderedItemType,idFromDb:string|null):void{
+    //     this.itemInfo.push({...addItemToCart,orderId:idFromDb})
+    // }
 
 
     @Mutation
     public updateOrderMut(orderInfoToDb:orderedItemType,orderId:string):void{
         this.itemInfo=[]
+    }
+
+    @Mutation
+    public fetchOrderLogMut(orderedItems:orderItemType[]):void{
+        this.orderLog = orderedItems;
+    }
+
+    @Mutation
+    public async cancelOrderMut(cancelOrderId:string):Promise<void>{
+        let cancelOrderIndex = this.orderLog.findIndex(log=>log.orderId === cancelOrderId);
+        this.orderLog[cancelOrderIndex].status = 9;
     }
 
     // action--------------------------------------------------------
@@ -63,29 +79,30 @@ import { UserStore } from "~/store";
 
         // ログインしていない場合storeにだけ追加
         if(!UserStore.userInfo){
-            this.addItemToCartMut(addItemToCart,null);
+            this.addItemToCartMut(addItemToCart);
         }// ログインしてたらdbとstoreに商品追加
         else {
             // 既にカートがあったらOrder/orderInfoコレクション内のitemInfo配列に追加
             if(this.getitemInfo.length>0){
-               // console.log("既にカートがあるので既存のカートに商品追加")
                 let newCartitems =  {...this.getitemInfo};
                 if(newCartitems[0].itemInfo===undefined)return
                 newCartitems[0].itemInfo.push(itemInfo);
                 if(this.getitemInfo[0].orderId===null) return;
 
-                db.collection(`users/${UserStore.userInfo.uid}/order`).doc(this.getitemInfo[0].orderId).update({
+                 db.collection(`users/${UserStore.userInfo.uid}/order`).doc(this.getitemInfo[0].orderId).update({
                     itemInfo:[...newCartitems[0].itemInfo]
                 }).then(()=>{
                 if (this.getitemInfo[0].orderId===undefined) return;
-                this.addItemToCartMut(addItemToCart,this.getitemInfo[0].orderId)})
+                this.addItemToCartMut(addItemToCart)})
             } else if(this.getitemInfo.length===0) {
             // カートの中身が空だったらOrder/ordrtIdコレクションごと作成
             if(!UserStore.userInfo.uid) return
            // console.log("カートが空なので新たなカートを作成")
             db.collection(`users/${UserStore.userInfo.uid}/order`).add(_order).then(cartItem=>{
-                this.addItemToCartMut(_order,cartItem.id)
-                this.addItemToNewCart(_order,cartItem.id)
+              //  this.addItemToCartMut(_order,cartItem.id)
+              //こっちは不要  this.addItemToNewCart(_order,cartItem.id)
+             let addItemToCart = {..._order,orderId:cartItem.id}
+              this.addItemToCartMut(addItemToCart)
             })
         }        
     }}
@@ -94,7 +111,6 @@ import { UserStore } from "~/store";
     public updateOrderAct(orderInfoToDb:orderedItemType):void{
         if(orderInfoToDb.orderInfo===undefined)return
         orderInfoToDb.status= orderInfoToDb.orderInfo.payment
-        console.log(orderInfoToDb);
         if(UserStore.userInfo){
             db.collection(`users/${UserStore.userInfo.uid}/order`).doc(orderInfoToDb.orderId).update(orderInfoToDb).then(()=>{
                 if(orderInfoToDb.orderId===undefined)return
@@ -119,6 +135,21 @@ import { UserStore } from "~/store";
         })
     }
 
+    //◎履歴取得
+    @Action({rawError: true})
+    public async fetchOrderLogAct(): Promise<void>{
+        await db.collection(`users/${UserStore.userInfo!.uid}/order`).get().then(itemInfoAll =>{
+            let orderedItems:orderItemType[] = []
+            if(itemInfoAll.docs.length>this.itemInfo.length){
+            itemInfoAll.forEach(itemInfo=>{
+                    if(itemInfo.data().status===1||itemInfo.data().status===2||itemInfo.data().status===3||itemInfo.data().status===4||itemInfo.data().status===9){
+                    orderedItems.push(itemInfo.data());
+                    }
+            })}
+            this.fetchOrderLogMut(orderedItems);
+        })
+    }
+
     //◎カートから商品削除 
     @Action({rawError: true})
     public async deleteCartItemAct(id:string): Promise<void>{
@@ -130,5 +161,15 @@ import { UserStore } from "~/store";
            itemInfo: this.getitemInfo[0].itemInfo
         })
     }
+
+    //◎注文キャンセル
+    @Action({rawError: true})
+    public async cancelOrderAct(logItem:orderedItemType):Promise<void>{
+        if(logItem.orderId){
+       await this.cancelOrderMut(logItem.orderId)
+        db.collection(`users/${UserStore.userInfo!.uid}/order`).doc(`${logItem.orderId}`).update({
+            status: 9
+         })
+    }}
 
 }

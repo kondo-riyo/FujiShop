@@ -1,9 +1,7 @@
 <template>
-  <div class="p-1">
-    <div  v-if="logItems.length === 0" class="grid p-20">
-      <div
-        class="mr-auto ml-auto font-bold sm:text-2xl text-lg"
-      >
+  <div class="pt-2">
+    <div v-if="getOrderLogs.length === 0" class="grid p-20">
+      <div class="mr-auto ml-auto font-bold sm:text-2xl text-lg">
         ※注文履歴はありません
       </div>
       <button
@@ -26,9 +24,9 @@
     </div>
     <div
       class="grid sm:m-5 m-1 justify-items-center"
-      v-if="logItems.length > 0"
+      v-if="getOrderLogs.length > 0"
     >
-      <div class="bg-white bg-opacity-60 rounded-xl">
+      <div class="bg-white bg-opacity-60 rounded-xl sm:w-auto w-screen">
         <div
           class="
             bg-base_red
@@ -41,13 +39,15 @@
             flex
           "
         >
-          <div class="p-1 sm:w-3/4 sm:text-center text-2xl">商品情報</div>
+          <div class="p-1 sm:w-3/4 w-screen sm:text-center text-2xl">
+            商品情報
+          </div>
           <div class="p-1 sm:w-1/4 text-2xl hidden sm:inline-block">
             配達情報
           </div>
         </div>
         <div
-          v-for="logItem in logItems"
+          v-for="logItem in getOrderLogs"
           :key="logItem.orderId"
           class="
             sm:flex
@@ -64,13 +64,22 @@
               class="m-1 p-1"
             >
               <!-- アイテム情報 -->
-              <div class="flex items-center justify-center">
-                <div class="sm:w-1/4 w-2/5">
+              <div
+                class="
+                  flex
+                  items-center
+                  sm:w-auto
+                  w-screen
+                  justify-center
+                  sm:h-64
+                "
+              >
+                <div class="sm:w-1/4 w-1/4">
                   <img class="rounded shadow-xl" :src="item.itemImg" />
                 </div>
-                <div class="flex flex-col ml-2 w-96 w-2/4">
+                <div class="flex flex-col ml-2 w-3/4 sm:w-96">
                   <div class="p-1 flex">
-                    <div class="w-3/4">
+                    <div class="w-3/4 truncate">
                       <span class="font-bold sm:text-xl">{{
                         item.itemName
                       }}</span
@@ -124,40 +133,41 @@
           </div>
           <div
             class="
-              w-80
-              bg-base_gray
-              bg-opacity-20
+              sm:bg-base_gray
+              sm:bg-opacity-20
               text-lg
-              flex flex-col
+              flex
+              sm:flex-col
               justify-center
               items-center
-              pl-2
-              pb-3
+              px-2
+              py-3
               sm:w-1/3
               w-full
             "
           >
+            <square-bottun class="mr-1 sm:mr-0" @click="openModal(logItem)"
+              >配送情報確認</square-bottun
+            >
             <div>
-              <div
-                class="
-                  sm:hidden
-                  text-xl
-                  border-solid
-                  border-base_red
-                  border-b-2 border-opacity-20
-                  pt-2
-                  pb-1
-                  mb-2
-                "
-              >
-                配達情報
-              </div>
-              <!-- オーダー情報 -->
-              <div>注文者 : {{ logItem.orderInfo.name }}</div>
-              <div>配送先 : {{ logItem.orderInfo.address }}</div>
-              <div>
-                配送日時 : {{ logItem.orderInfo.deliveryDate }}
-                {{ logItem.orderInfo.deliveryTime }}時
+              <order-modal
+                :status="mordalStatus"
+                :orderInfo="mordalOrderInfo"
+                v-show="showContent"
+                @close="closeModal"
+              ></order-modal>
+
+              <div class="sm:mt-2 ml-1 sm:ml-0">
+                <square-bottun
+                  class="block"
+                  v-show="logItem.status === 1"
+                  @click="cancelOrder(logItem)"
+                  data-testid="cancelOrder"
+                  >注文キャンセル</square-bottun
+                >
+                <disableButton class="block" v-show="logItem.status === 9"
+                  >キャンセル済み</disableButton
+                >
               </div>
             </div>
           </div>
@@ -168,53 +178,55 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import { UserStore } from '../store';
-import { db } from '../plugins/firebase';
+import { CartStore } from '../store';
 import { orderedItemType } from '../types/cartItemType';
-
-type DataType = {
-  logItems: orderedItemType[];
-};
+import disableButton from  '../components/atoms/button/disableButton.vue'
+import squareBottun from '../components/atoms/button/squareBottun.vue'
+import orderModal from '../components/organisms/orderModal.vue' 
 export default Vue.extend({
   head() {
     return {
       title: '注文履歴',
+      show: false,
     };
   },
-  data(): DataType {
+  components:{disableButton,squareBottun,orderModal},
+  data() {
     return {
-      logItems: [],
+      showContent: false,
+      mordalOrderInfo: '',
+      mordalStatus: 1,
     };
   },
   computed: {
-    totalItemPrice():number {
+    totalItemPrice(): number {
       let totalPrice: number = 0;
-      this.logItems.forEach((item) => {
+      this.getOrderLogs.forEach((item) => {
         item.itemInfo!.forEach((price) => {
           totalPrice = totalPrice + price.totalPrice!;
         });
       });
       return totalPrice;
     },
+    getOrderLogs() {
+      return CartStore.getOrderLog;
+    },
   },
   async fetch(): Promise<void> {
-    if (!UserStore.userInfo) {
-      console.log('ログインしていません');
-    } else {
-      if (!UserStore.userInfo.uid) return;
-      let uid: string | undefined | null;
-      uid = UserStore.userInfo.uid;
-      await db
-        .collection(`users/${uid}/order`)
-        .get()
-        .then((orders) => {
-          orders.forEach((order) => {
-            if (order.data().status === 1 || order.data().status === 2) {
-              this.logItems.push(order.data());
-            }
-          });
-        });
-    }
+      await CartStore.fetchOrderLogAct();
+   },
+  methods: {
+    cancelOrder(logItem: orderedItemType) {
+      CartStore.cancelOrderAct(logItem);
+    },
+    openModal(logItem: any) {
+      this.showContent = true;
+      this.mordalOrderInfo = logItem.orderInfo;
+      this.mordalStatus = logItem.status;
+    },
+    closeModal() {
+      this.showContent = false;
+    },
   },
 });
 </script>

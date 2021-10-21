@@ -1,5 +1,5 @@
 import { Module, VuexModule, Mutation, Action } from "vuex-module-decorators"
-import { db } from "~/plugins/firebase";
+import { db } from "../plugins/firebase";
 import { itemType } from '../types/itemType'
 
 @Module({ name: 'items', namespaced: true ,stateFactory: true})
@@ -38,7 +38,7 @@ import { itemType } from '../types/itemType'
     }
 
     // action----------------------------------------------------
-    // 商品データ取得
+    // 商品データ取得(DB)
      @Action({rawError: true})
       public async fetchItemsAct(): Promise<void>{
        await db.collection(`items`).get().then(items=>{

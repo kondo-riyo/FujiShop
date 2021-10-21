@@ -1,6 +1,6 @@
 import firebase , { auth, db } from '../plugins/firebase';
 import { Module, VuexModule, Mutation, Action } from "vuex-module-decorators"
-import { Cookies } from '~/plugins/cookie'
+import { Cookies } from '../plugins/cookie'
 import { userInfoType } from '../types/userInfoType'
 
 @Module({ name: 'user', namespaced: true ,stateFactory: true})
@@ -42,10 +42,10 @@ export default class UserStore extends VuexModule {
     public async loginAct(email:string,uid:string): Promise<void>{
         if (auth.currentUser===null) return;
         const token = await auth.currentUser.getIdToken(true);
-
         // ログイン後、会員情報もユーザ情報に保存
         db.collection(`users/${auth.currentUser.uid}/userInfo`).get().then(
-            userInfo=>this.fetchSignupInfoMut(userInfo.docs[0].data())
+            userInfo=>
+            this.fetchSignupInfoMut(userInfo.docs[0].data()) 
         )
 
         const userInfo = {

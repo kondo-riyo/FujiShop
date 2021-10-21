@@ -1,99 +1,29 @@
 <template>
   <div class="sm:pl-10 p-1 flex">
-    <div>
-      <div class="mb-5"><h1 class="block ml-2 text-4xl">商品詳細</h1></div>
-      <div class="sm:flex">
-        <div class="m-2">
-          <img :src="itemDetail.img" class="rounded-xl w-full" />
-        </div>
+    <div class="sm:w-3/4 my-0 mx-auto">
+      <!-- 戻るボタン追加 -->
+      <div @click="back_onStep" class="flex group m-2">
         <div
           class="
-            flex flex-col
-            justify-center
-            sm:m-5
-            bg-white
-            p-3
-            sm:p-5
-            rounded-xl
+            group-hover:bg-base_red group-hover:bg-opacity-30
+            p-4
+            rounded-full
           "
         >
-          <div>
-            <p class="text-gray-700 text-2xl sm:text-4xl font-bold">
-              {{ itemDetail.name }}
-            </p>
-          </div>
-          <div class="mt-5">
-            <p>
-              <span class="text-xl sm:text-3xl">￥{{ itemDetail.price }}</span>
-              税込
-            </p>
-          </div>
-          <div>
-            <p class="block my-2 sm:my-4 sm:text-xl">
-              {{ itemDetail.description }}
-            </p>
-          </div>
-
-          <div class="flex">
-            <div class="flex items-center">
-              <span class="mr-3">
-                <font style="vertical-align: inherit">
-                  <font style="vertical-align: inherit">個数</font>
-                </font>
-              </span>
-              <div class="relative">
-                <select
-                  class="
-                    rounded
-                    border
-                    appearance-none
-                    border-gray-300
-                    py-2
-                    focus:outline-none
-                    focus:ring-2
-                    focus:ring-base_orange
-                    focus:border-base_orange
-                    text-base
-                    pl-3
-                    pr-10
-                  "
-                  v-model="selectedItemNum"
-                >
-                  <option v-for="(num, index) in itemNum" :key="index">
-                    {{ num }}
-                  </option>
-                </select>
-                <span
-                  class="
-                    absolute
-                    right-0
-                    top-0
-                    h-full
-                    text-center text-gray-600
-                    pointer-events-none
-                    flex
-                    w-4
-                    items-center
-                    justify-center
-                  "
-                >
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    class="w-4 h-4"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M6 9l6 6 6-6"></path>
-                  </svg>
-                </span>
-              </div>
-            </div>
-          </div>
+          <img
+            src="~assets/img/yajirusi_icon.webp"
+            class="transform rotate-90 w-5"
+          />
         </div>
+        <div class="text-base_red font-bold m-3 mx-1">一覧に戻る</div>
       </div>
+      <!-- <div class="mb-5"><h1 class="block ml-2 text-4xl">商品詳細</h1></div> -->
+
+      <Detail
+        :itemDetail="itemDetail"
+        :options="itemNum"
+        v-model="selectedItemNum"
+      />
 
       <div class="sm:mt-5 mt-2 bg-white p-3 rounded-xl">
         <p class="mb-3 pl-2 text-xl">
@@ -108,6 +38,7 @@
             <div class="bg-base_cream bg-opacity-60 rounded p-1">
               <p>{{ topping.name }}</p>
               <input
+                data-testid="cal-modalM"
                 type="radio"
                 :name="'radio' + index"
                 class="
@@ -135,6 +66,7 @@
               />
               <span class="font-normal text-sm">少</span>
               <input
+                data-testid="cal-modalL"
                 type="radio"
                 :name="'radio' + index"
                 class="
@@ -163,6 +95,7 @@
               />
               <span class="font-normal text-sm">多</span>
               <input
+                data-testid="cal-modalNone"
                 type="radio"
                 :checked="true"
                 :name="'radio' + index"
@@ -200,7 +133,7 @@
           </p>
         </div>
         <div class="py-1 px-6 sm:py-2 sm:px-8">
-          <button
+          <squareBottun
             class="
               text-white
               font-semibold
@@ -218,8 +151,23 @@
             @click="addCart"
           >
             追加
-          </button>
+          </squareBottun>
         </div>
+      </div>
+      <div @click="back_onStep" class="flex group">
+        <div
+          class="
+            group-hover:bg-base_red group-hover:bg-opacity-30
+            p-4
+            rounded-full
+          "
+        >
+          <img
+            src="~assets/img/yajirusi_icon.webp"
+            class="transform rotate-90 w-5"
+          />
+        </div>
+        <div class="text-base_red font-bold m-3 mx-1">一覧に戻る</div>
       </div>
     </div>
   </div>
@@ -231,6 +179,8 @@ import { ItemsStore, ToppingsStore, CartStore, UserStore } from '../../store';
 import { itemType } from '../../types/itemType';
 import { toppingType } from '../../types/toppingType';
 import { cartItemType } from '../../types/cartItemType';
+import squareBottun from '../../components/atoms/button/squareBottun.vue';
+import Detail from '../../components/organisms/detail.vue';
 
 type DataType = {
   isSelectedM: null | number;
@@ -248,6 +198,10 @@ export default Vue.extend({
       title: '商品詳細',
     };
   },
+  components: {
+    squareBottun,
+    Detail,
+  },
   data(): DataType {
     return {
       isSelectedM: null,
@@ -261,11 +215,14 @@ export default Vue.extend({
   },
   created(): void {
     const params: number = Number(this.$route.params.itemId);
-    const getItemDetail: itemType | undefined =
-      ItemsStore.getItemDetail(params);
-    this.itemDetail = getItemDetail;
+    this.getItemDetail(params);
   },
   methods: {
+    getItemDetail(params: number) {
+      const getItemDetail: itemType | undefined =
+        ItemsStore.getItemDetail(params);
+      this.itemDetail = getItemDetail;
+    },
     // トッピング追加----------------------------------------------------
     selectToppingSize(
       selectedName: string,
@@ -273,34 +230,28 @@ export default Vue.extend({
       toppingPrice: number,
       toppingSize: number
     ): void {
-      // 同じトッピングを選択していないかチェック
+      //同じトッピングを選択していないかチェック
       const duplicatedTopping = this.selectedTopping.findIndex(
         (topping) => topping.id === selecteId
       );
       // toppingの重複が無いとき
-      if (duplicatedTopping < 0) {
-        const pushTopping: toppingType = {
-          name: selectedName,
-          id: selecteId,
-          price: toppingPrice,
-          size: toppingSize,
-        };
-        this.selectedTopping.push(pushTopping);
-      }
-      // 同じtoppingを選んだとき
+       if (duplicatedTopping < 0) {
+      const pushTopping: toppingType = {
+        name: selectedName,
+        id: selecteId,
+        price: toppingPrice,
+        size: toppingSize,
+      };
+      this.selectedTopping.push(pushTopping);
+       }
+      //同じtoppingを選んだとき
       else if (duplicatedTopping >= 0) {
         // サイズを変更したとき
         if (this.selectedTopping[duplicatedTopping].size !== toppingSize) {
           this.selectedTopping[duplicatedTopping].size = toppingSize;
           this.selectedTopping[duplicatedTopping].price = toppingPrice;
-        } // 取り消したいとき(同じトッピング・サイズを選んだとき)
-        else {
-          this.selectedTopping[duplicatedTopping].size = 0;
-          this.selectedTopping = this.selectedTopping.filter(
-            (topping) => topping.size !== 0
-          );
-        }
-      }
+        } 
+       }
       // topping価格の更新
       this.allToppingPrice = this.selectedTopping.reduce(
         (sum: number, addTopping: any) => sum + addTopping.price,
@@ -310,10 +261,17 @@ export default Vue.extend({
 
     //トッピングを未選択に戻す
     clearTopping(selecteId: number): void {
+      this.selectedTopping = this.selectedTopping.filter(
+        (topping) => topping.size !== 0
+      );
       const deleteToppigIndex = this.selectedTopping.findIndex(
         (topping) => topping.id === selecteId
       );
       this.selectedTopping.splice(deleteToppigIndex, 1);
+            this.allToppingPrice = this.selectedTopping.reduce(
+        (sum: number, addTopping: any) => sum + addTopping.price,
+        0
+      );
     },
 
     // カートに追加-------------------------------------------------------------------
@@ -337,12 +295,10 @@ export default Vue.extend({
         }
       }
     },
-  },
-  computed: {
-    getToppings(): toppingType[] {
-      return ToppingsStore.getToppings;
+    back_onStep(): void {
+      this.$router.push('/searchFujiItems');
     },
-    calcTotalPrice(): number {
+    cartAllPrice(): number {
       if (
         this.itemDetail === undefined ||
         this.itemDetail.price === undefined
@@ -352,6 +308,14 @@ export default Vue.extend({
       return (
         this.selectedItemNum * this.itemDetail.price + this.allToppingPrice
       );
+    },
+  },
+  computed: {
+    getToppings(): toppingType[] {
+      return ToppingsStore.getToppings;
+    },
+    calcTotalPrice(): any {
+      return this.cartAllPrice();
     },
   },
 });

@@ -25,34 +25,18 @@
         <p class="animate-bounce text-2xl font-bold mt-1 font-base_gray">↓</p>
       </div>
       <div>
-        <button
-          class="
-            bg-base_red
-            hover:bg-base_orange
-            text-base_cream
-            font-bold
-            py-2
-            px-6
-            rounded-full
-          "
-        >
-          <router-link to="OrderLog">注文内容を確認する</router-link>
-        </button>
+        <round-bottun>
+          <router-link to="OrderLog">
+            注文内容を確認する
+          </router-link>
+        </round-bottun>
       </div>
       <div class="py-2">
-        <button
-          class="
-            bg-base_red
-            hover:bg-base_orange
-            text-base_cream
-            font-bold
-            py-2
-            px-12
-            rounded-full
-          "
-        >
-          <router-link to="/"> ホームに戻る </router-link>
-        </button>
+        <round-bottun>
+          <router-link to="/">
+          ホームに戻る
+          </router-link>
+        </round-bottun>
       </div>
     </div>
   </div>
@@ -61,10 +45,16 @@
 import Vue from 'vue';
 import { UserStore } from '../store';
 import { userInfoType } from '../types/userInfoType';
+import roundBottun from '../components/atoms/button/roundBottun.vue'
 export default Vue.extend({
+  components:{
+    roundBottun
+  },
   computed: {
+    // userInfoFromStore() {
     userInfoFromStore(): userInfoType | null {
       return UserStore.getUserInfo;
+      // this.userInfoStore()
     },
   },
   head() {
