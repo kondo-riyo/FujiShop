@@ -1,18 +1,44 @@
 <template>
   <div>
-    <div id="overlay">
-      <div id="content">
-        <p><button @click="$emit('close')">×</button></p>
-        <p>
-          注文者 <span class="font-bold"> {{ orderInfo.name }}さん</span>
+    <div id="overlay" @click.self="$emit('close')">
+      <div id="content" class="sm:w-1/2">
+        <p
+          class="
+              bg-base_gray
+              rounded-full
+              text-center
+              w-7
+            "
+          @click="$emit('close')"
+          >
+          ×
         </p>
-        <p>お届け先 <span class="font-bold">{{ orderInfo.address }}</span></p>
-        <p>電話番号 <span class="font-bold">{{ orderInfo.tel }}</span></p>
-        <p>メール <span class="font-bold">{{ orderInfo.email }}</span></p>
-        <p>
-          お届け日時 <span class="font-bold">{{ orderInfo.deliveryDate }} {{ orderInfo.deliveryTime }}時</span>
-        </p>
-        <p>支払状況 <span data-testid="paymentStatus" class="font-bold">{{ status | paymentStatus }}</span></p>
+        <div class="sm:m-3">
+          <div class="sm:flex text-left m-4">
+            <div class="sm:w-2/5 text-base_gray sm:px-10">注文者</div>
+            <div class="sm:w-3/5">{{ orderInfo.name }} さん</div>
+          </div>
+          <div class="text-left m-4 sm:flex">
+            <div class="sm:w-2/5 text-base_gray sm:px-10">お届け先</div>
+            <div class="sm:w-3/5">{{ orderInfo.address }}</div>
+          </div>
+          <div class="sm:flex text-left m-4">
+            <div class="sm:w-2/5 text-base_gray sm:px-10">電話番号 </div>
+            <div class="sm:w-3/5">{{ orderInfo.tel }}</div>
+          </div>
+          <div class="sm:flex text-left m-4">
+            <div class="sm:w-2/5 text-base_gray sm:px-10">メール</div>
+            <div class="sm:w-3/5">{{ orderInfo.email }}</div>
+          </div>
+          <div class="sm:flex text-left m-4">
+            <div class="sm:w-2/5 text-base_gray sm:px-10">配達日時 </div>
+            <div class="sm:w-3/5">{{ orderInfo.deliveryDate }} {{ orderInfo.deliveryTime }}時</div>
+          </div>
+          <div class="sm:flex text-left m-4">
+            <div class="sm:w-2/5 text-base_gray sm:px-10">支払状況</div>
+            <div class="sm:w-3/5">{{ status | paymentStatus }}</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -57,7 +83,7 @@ export default Vue.extend({
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(139, 139, 139, 0.26);
+  background-color: rgba(255, 255, 255, 0.042);
 
   /*画面の中央に要素を表示させる設定*/
   display: flex;
@@ -67,8 +93,13 @@ export default Vue.extend({
 
 #content {
   z-index: 2;
-  width: 50%;
+  /* width: 50%; */
   padding: 1em;
-  background: #fff;
+  background: rgba(248, 248, 248, 0.2);
+  border-radius: 30px;
+  border-color: rgba(153, 134, 117, 0.26);
+  border-width: 4px;
+  box-shadow: 20px;
 }
+
 </style>
