@@ -1,6 +1,17 @@
 <template>
   <div class="">
-    <search-group data-testid="search" @searchItems="search" />
+    <div>
+      <div 
+       class="
+        flex 
+        w-full justify-center items-center 
+        text-base_brown mt-4 -mb-2 text-center text-xl sm:text-2xl font-bold
+      ">
+      <div><img src="~/assets/img/fujicoffee.webp" class="w-12"/></div>
+      <div class="pt-2">FujiCoffeeオリジナル商品</div>
+      </div>
+    </div>
+    <search-group data-testid="search" @searchItems="search" class="my-0 mx-auto" />
     <div class="my-5 text-base_red font-bold">
       <div v-show="resultNullFlg" class="text-center">
         ※該当する商品がありません

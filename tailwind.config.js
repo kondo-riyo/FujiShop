@@ -6,12 +6,14 @@ module.exports = {
       colors: {
       //  base_red: '#994837',
         base_red: '#877667',
+        base_aka: '#994837',
         base_orange: '#bd5c47',
         base_green: '#3f582e',
         base_cream: '#f2e0ca',
         base_gray: '#998675',
         base_of: '#f6f5f1',
         base_yellow: '#f0e4d5',
+        base_brown: '#593315',
       },
       width: {
         550: '550px',
