@@ -44,11 +44,14 @@ import { itemType } from '../types/itemType';
 import { ItemsStore } from '../store';
 import Card from '../components/organisms/card.vue';
 import searchGroup from '../components/morecules/searchGroup.vue';
+type routerName = {
+  fujiShop: string
+ }
 type DataType = {
   searchedItems: itemType[];
   keywordNullFlg: boolean;
   resultNullFlg: boolean;
-  routerName: Object;
+  routerName: routerName;
 };
 type headType = {
   title: string;

@@ -22,32 +22,7 @@
     </div>
     <div class="grid justify-items-center">
     <div>
-      <!-- <select
-       @change="displaySelect"
-       v-model="selectStatus"
-       name="表示status"
-       class="
-        bg-base_red hover:bg-opacity-70
-        text-white text-center
-        rounded-lg
-        p-3
-        m-1
-       "
-       >
-               <option value="0"> ALL </option>
-               <option value="1">未入金(代引き)</option>
-               <option value="2">入金済(クレジット)</option>
-               <option value="3">発送済</option>
-               <option value="4">配達済</option>
-               <option value="9">キャンセル</option>               
-      </select>
-    </div> -->
-    <!-- <div 
-     v-if="!this.newlogItems.length"
-     class="text-base_red font-bold border-b-2 border-base_gray text-lg pt-6"
-    >
-      {{this.statusName}}商品はありません
-    </div> -->
+
     <div
       class="grid justify-items-center"
     >
@@ -262,10 +237,10 @@
 <script lang="ts">
 import Vue from 'vue';
 import { AdminStore } from '../../store';
-import { orderItemType } from '../../types/cartItemType';
+import { orderedItemType } from '../../types/cartItemType';
 
 type DataType = {
-  selectStatus: string;
+  selectStatus: number;
   statusName: string;
   newlogItems: any;
   params: string;
@@ -289,7 +264,7 @@ export default Vue.extend({
   },
   data(): DataType {
     return {
-      selectStatus: '',
+      selectStatus: 0,
       statusName: '',
       newlogItems: [],
       params: '',
@@ -303,9 +278,11 @@ export default Vue.extend({
     };
   },
   computed: {
-    getLogItems(): orderItemType[]{
+    getLogItems(): orderedItemType[] {
+    // getLogItems():void{
+      return  AdminStore.getstoreLogItems
       //@ts-ignore
-      return AdminStore.getstoreLogItems
+      // return this.displaySelect
     },
   },
   async fetch(): Promise<void> {
@@ -321,33 +298,10 @@ export default Vue.extend({
       back_onStep(): void {
         this.$router.push('/admin')
       },
-      // selectToStatus(value: any) {
-      //   this.selectStatus = value
-      //   console.log('selectToStatus'+this.selectStatus)
-      // }
-      // displaySelect(): Array<void>|undefined{
-      //   console.log(this.selectStatus)
-      //   if(this.selectStatus == 0){
-      //     this.statusName = '注文済みの'
-      //     return this.newlogItems = AdminStore.getstoreLogItems
-      //   } else {
-      //     //@ts-ignore
-      //     if(this.selectStatus == 1){
-      //       this.statusName = '未入金(代引き)の'
-      //     }else if(this.selectStatus == 2){
-      //       this.statusName = '入金済(クレジット)の'
-      //     }else if(this.selectStatus == 3){
-      //       this.statusName = '発送済の'
-      //     }else if(this.selectStatus == 4){
-      //       this.statusName = '配達済の'
-      //     }else if(this.selectStatus == 9){
-      //       this.statusName = '注文をキャンセルした'
-      //     }
-      //     //@ts-ignore
-      //     this.newlogItems = this.getLogItems.filter(e => e.status == this.selectStatus)
-      //     // return this.newlogItems
-      //   }
-      // }
+      selectToStatus(value: any) {
+        this.selectStatus = value
+        console.log('selectToStatus'+this.selectStatus)
+      },
   }
 });
 </script>

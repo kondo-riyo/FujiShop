@@ -351,6 +351,7 @@ export default Vue.extend({
         await this.addAuthUserToDb(authUser.user.uid);
         this.$router.push('/signin');
       } catch (error) {
+        // @ts-ignore
         console.log(error.message);
       }
     },

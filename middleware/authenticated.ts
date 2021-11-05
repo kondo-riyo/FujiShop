@@ -6,6 +6,7 @@ import { Context } from "@nuxt/types";
 
 const authenticated = ({store,redirect}:Context) => {
     if (!store.getters['user/isAuthenticated']) {
+      console.log('未ログイン')
     }else{
       return redirect('/')
     }

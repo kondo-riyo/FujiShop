@@ -5,7 +5,7 @@ export interface userInfoType {
     tel?:string;
     postalcode?: string;
     address?:string;
-    uid?:string|null
+    uid?:string|null;
 }
 
 
@@ -15,11 +15,12 @@ export interface userLoginType {
 }
 
 export interface orderInfoDataType {
-    userInfo:orderInfoDataType
+    userInfo:orderInfoDataType;
 }
 
 export interface idNameType {
     // orderId?: string;
-    uid?: string;
+    uid?: string|undefined;
     name?: string;
+    orderId?:string;
 }

@@ -5,39 +5,39 @@ export interface cartItemType {
     itemName?:string;
     itemPrice?:number;
     itemImg?:string;
-    itemNum?:number;
+    itemNum?:number|undefined;
     toppings?: toppingType[]|null;
     orderId?:string;
-    status?:0,
-    allToppingPrice?:number;
-    totalPrice?:number;
-    specialId?:string
+    status?:0;
+    allToppingPrice?:number|undefined;
+    totalPrice?:number|undefined;
+    specialId?:string;
 }
 
 export interface orderItemType {
-    itemInfo?:cartItemType[],
-    status?:number,
-    orderId?:string | null | undefined
+    itemInfo?:cartItemType[]|undefined;
+    status?:number;
+    orderId?:string|null|undefined;
 }
 
 export interface orderInfoType {
-    userInfo?:userInfoType|null
-    name?: string,
-    email?: string,
-    postalcode?: string,
-    address?: string,
-    tel?: string,
-    deliveryDate: string,
-    deliveryTime: string,
-    payment: number,
-    creditCardNum: string,
-    selectPayment: boolean
-
+    userInfo?:userInfoType|null;
+    name?: string;
+    email?: string;
+    postalcode?: string;
+    address?: string;
+    tel?: string;
+    deliveryDate: string;
+    deliveryTime: string;
+    payment: number;
+    creditCardNum: string;
+    selectPayment: boolean;
+    allPrice?:number|undefined;
 }
 
 export interface orderedItemType {
-    itemInfo?:cartItemType[],
-    status?:number
-    orderInfo?:orderInfoType,
-    orderId?:string
+    itemInfo?:cartItemType[];
+    status?:number;
+    orderInfo?:orderInfoType;
+    orderId?:string;
 }

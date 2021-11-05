@@ -2,7 +2,7 @@ import { Module, VuexModule, Mutation, Action } from "vuex-module-decorators"
 import { db } from "../plugins/firebase";
 import { UserStore } from "../store";
 import {idNameType} from '../types/userInfoType';
-import { orderItemType } from "~/types/cartItemType";
+import { orderedItemType, orderItemType } from "~/types/cartItemType";
 
 type idSatusType = {
     id: string;
@@ -17,7 +17,7 @@ export default class AdminStore extends VuexModule {
         public id: string ='';
         public status: number = 0;
         public users: idNameType[] = [];
-        public storeLogItems: orderItemType[] = [];
+        public storeLogItems: orderedItemType[] = [];
         public usersList: idNameType[] = [];
 
     //getters-----------------------------------
@@ -25,7 +25,7 @@ export default class AdminStore extends VuexModule {
             return this.users;
         }
 
-        public get getstoreLogItems(): orderItemType[] {
+        public get getstoreLogItems(): orderedItemType[] {
             return this.storeLogItems
         }
         
@@ -41,7 +41,7 @@ export default class AdminStore extends VuexModule {
     }
 
     @Mutation
-    public fetchLogItemsMut(logItems:any[]):void{
+    public fetchLogItemsMut(logItems:orderedItemType[]):void{
         this.storeLogItems = logItems;
     }
     
@@ -82,7 +82,7 @@ export default class AdminStore extends VuexModule {
         .collection(`users/${params}/order`)
         .get()
         .then((orders) => {
-          let logItems: any[] = []
+          let logItems: orderedItemType[] = []
           orders.forEach((order) => {
             if(order.data().status!=0){
                 logItems.push(order.data());

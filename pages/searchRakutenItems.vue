@@ -43,12 +43,14 @@ import { ApiItemsStore } from '../store';
 import { itemType } from '../types/itemType';
 import Card from '../components/organisms/card.vue';
 import searchGroup from '../components/morecules/searchGroup.vue';
-
+type routerName = {
+ rakuten: string;
+}
 type DataType = {
   defaultItemsFlg: boolean;
   keywordNullFlg: boolean;
   searchItemNullFlg: boolean;
-  routerName: Object;
+  routerName: routerName;
 };
 
 type headType = {

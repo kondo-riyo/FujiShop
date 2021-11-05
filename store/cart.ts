@@ -12,7 +12,7 @@ import { UserStore } from "../store";
     public itemInfo:  orderItemType[] = [];
     public userUid: string='';
     public order:null|cartItemType=null;
-    public orderLog: orderItemType[]=[]
+    public orderLog: orderedItemType[]=[]
 
 
     // getters--------------------------------------
@@ -21,7 +21,7 @@ import { UserStore } from "../store";
         return this.itemInfo;
     }
 
-    public get getOrderLog(): orderItemType[]{
+    public get getOrderLog(): orderedItemType[]{
         return this.orderLog
     }
 
@@ -58,7 +58,7 @@ import { UserStore } from "../store";
     }
 
     @Mutation
-    public fetchOrderLogMut(orderedItems:orderItemType[]):void{
+    public fetchOrderLogMut(orderedItems:orderedItemType[]):void{
         this.orderLog = orderedItems;
     }
 
@@ -143,7 +143,7 @@ import { UserStore } from "../store";
     @Action({rawError: true})
     public async fetchOrderLogAct(): Promise<void>{
         await db.collection(`users/${UserStore.userInfo!.uid}/order`).get().then(itemInfoAll =>{
-            let orderedItems:orderItemType[] = []
+            let orderedItems:orderedItemType[] = []
             if(itemInfoAll.docs.length>this.itemInfo.length){
             itemInfoAll.forEach(itemInfo=>{
                     if(itemInfo.data().status===1||itemInfo.data().status===2||itemInfo.data().status===3||itemInfo.data().status===4||itemInfo.data().status===9){

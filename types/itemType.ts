@@ -5,4 +5,6 @@ export interface itemType {
     discription?:string;
     img?:string;
     rank?:number;
+    shopName?:string;
+    moreDescription?:string;
 }

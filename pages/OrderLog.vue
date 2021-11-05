@@ -181,9 +181,9 @@
 <script lang="ts">
 import Vue from 'vue';
 import { CartStore } from '../store';
-import { orderedItemType, orderItemType } from '../types/cartItemType';
-import disableButton from  '../components/atoms/button/disableButton.vue'
-import squareBottun from '../components/atoms/button/squareBottun.vue'
+import { orderedItemType } from '../types/cartItemType';
+import disableButton from '../components/atoms/button/disableButton.vue';
+import squareBottun from '../components/atoms/button/squareBottun.vue';
 import orderModal from '../components/organisms/orderModal.vue' 
 
 type DataType = {
@@ -210,7 +210,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    getOrderLogs(): orderItemType[] {
+    getOrderLogs(): orderedItemType[] {
       return CartStore.getOrderLog;
     },
   },

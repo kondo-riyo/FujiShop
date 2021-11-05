@@ -76,7 +76,6 @@
                     topping.id,
                     topping.priceM,
                     1,
-                    topping.isActiveM
                   )
                 "
               />
@@ -105,7 +104,6 @@
                     topping.id,
                     topping.priceL,
                     2,
-                    topping.isActiveL
                   )
                 "
               />
@@ -283,10 +281,10 @@ export default Vue.extend({
     },
     // トッピング追加----------------------------------------------------
     selectToppingSize(
-      selectedName: string,
-      selecteId: number,
-      toppingPrice: number,
-      toppingSize: number
+      selectedName: string|undefined,
+      selecteId: number|undefined,
+      toppingPrice: number|undefined,
+      toppingSize: number|undefined,
     ): void {
       //同じトッピングを選択していないかチェック
       const duplicatedTopping = this.selectedTopping.findIndex(
@@ -318,7 +316,7 @@ export default Vue.extend({
     },
 
     //トッピングを未選択に戻す
-    clearTopping(selecteId: number): void {
+    clearTopping(selecteId: number|undefined): void {
       this.selectedTopping = this.selectedTopping.filter(
         (topping) => topping.size !== 0
       );
